@@ -30,7 +30,7 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 | [Mario](https://github.com/taxmeifyoucan/)      | [ Update 0](https://notes.ethereum.org/@MarioHavel/week0)                                           |        |        |
 | [Marko](https://github.com/markolazic01)        | [Update 0](https://hackmd.io/@lqzic/week-0-update)                                                  | [Update 1](https://hackmd.io/@lqzic/week-1-update)       |        |
 | [Meek](https://github.com/mmsaki)               | [Update 0](https://hackmd.io/@YBDu_chCTnKXFnYTkux9tQ/HJ5Rqa1zzx)                                     | [Update 1](https://hackmd.io/@YBDu_chCTnKXFnYTkux9tQ/rJvMCpJzfg) |        |
-| [Mohit](https://github.com/groverInnovate)      | [Update 0](https://hackmd.io/@groverInnovate/EPF7_Week0)                                            |        |        |
+| [Mohit](https://github.com/groverInnovate)      | [Update 0](https://hackmd.io/@groverInnovate/EPF7_Week0)                                            | [Update 1](https://hackmd.io/@groverInnovate/HykPOFUMzx)       |        |
 | [Parth](https://github.com/ParthSinghPS)        | [Update 0](https://hackmd.io/@ParthSinghPS/HJMWUn6xzg)                                              |        |        |
 | [Rahul](https://github.com/rahulbarmann/)       | [Update 0](https://hackmd.io/@8t0zzURJSC6IX5BOuOiGqQ/Sk0vwhHZfg)                                    |        |        |
 | [Richard](https://github.com/richardgreg)      | [Update 0](https://richardgreg.github.io/ethereum-protocol-fellowship/2026/06/10/week-0.html)        |        |        |
