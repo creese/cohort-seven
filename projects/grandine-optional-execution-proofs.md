@@ -2,34 +2,100 @@
 
 ## Motivation
 
-After more than three years without an increase, Ethereum resumed raising its gas limit in February 2025, reaching 60 million gas and signaling a broader shift toward scaling L1 execution. Today, execution clients across the network independently repeat the same computation to validate each execution payload, and the cost of this duplicated work rises with the gas limit. The path toward gigagas raises a fundamental question: how can Ethereum scale execution without compromising the broad node participation that supports its CROPS values?
+After more than three years without an increase, Ethereum resumed
+raising its gas limit in February 2025, reaching 60 million gas and
+signaling a broader shift toward scaling L1 execution. Today,
+execution clients across the network independently repeat the same
+computation to validate each execution payload, and the cost of this
+duplicated work rises with the gas limit. The path toward gigagas
+raises a fundamental question: how can Ethereum scale execution
+without compromising the broad node participation that supports its
+CROPS values?
 
-Running a validator requires operating both a consensus client and an execution client. These two services must be separately configured and kept compatible, with coordinated upgrades during hard forks. The execution client must also maintain the execution state required to re-execute and validate each new payload, increasing compute and storage requirements.
+Running a validator requires operating both a consensus client and an
+execution client. These two services must be separately configured and
+kept compatible, with coordinated upgrades during hard forks. The
+execution client must also maintain the execution state required to
+re-execute and validate each new payload, increasing compute and
+storage requirements.
 
-Execution proofs offer a way to support L1 scaling by replacing re-execution with proof verification whose cost is largely independent of the gas limit. They could allow consensus clients to validate execution payloads—and even sync to the chain head—without relying on a local execution client, reducing the operational burden of today's two-client architecture. Realizing this model would require changes primarily to the execution-payload validation path and to the consensus-layer P2P protocols used to gossip proofs and retrieve them during synchronization.
+Execution proofs offer a way to support L1 scaling by replacing
+re-execution with proof verification whose cost is largely independent
+of the gas limit. They could allow consensus clients to validate
+execution payloads—and even sync to the chain head—without relying on
+a local execution client, reducing the operational burden of today's
+two-client architecture. Realizing this model would require changes
+primarily to the execution-payload validation path and to the
+consensus-layer P2P protocols used to gossip proofs and retrieve them
+during synchronization.
 
 
 ## Project description
 
-Optional Execution Proofs (EIP-8025) proposes to remove the computational burden of transaction re-execution for every client node via a simple and lightweight execution proof. An execution proof is a cryptographic proof that guarantees a block's associated execution payload is valid. Under this EIP, consensus clients will be self-sufficient to perform block validations, node syncing, attestations and fork-choice updates using execution proofs. Meanwhile, execution clients will take on a critical and highly specialized role of generating execution witnesses for these execution proofs, creating a clean separation between consensus and execution. This independence allows consensus clients to sync on their own by requesting historical proofs from peers, as well as to actively gossip newly received proofs once they have verified them to be true.
+Optional Execution Proofs (EIP-8025) proposes to remove the
+computational burden of transaction re-execution for every client node
+via a simple and lightweight execution proof. An execution proof is a
+cryptographic proof that guarantees a block's associated execution
+payload is valid. Under this EIP, consensus clients will be
+self-sufficient to perform block validations, node syncing,
+attestations and fork-choice updates using execution proofs.
+Meanwhile, execution clients will take on a critical and highly
+specialized role of generating execution witnesses for these execution
+proofs, creating a clean separation between consensus and execution.
+This independence allows consensus clients to sync on their own by
+requesting historical proofs from peers, as well as to actively gossip
+newly received proofs once they have verified them to be true.
 
-A prover generates  execution proofs and shares them with peers. Whereas, a verifier (zkAttester) verifies these proofs and attests to slots based on the validity of the associated proof. Both provers and verifiers must be active validators to perform their duties. To enable network statelessness for verifiers, a prover must maintain a fully synchronized node comprising both the execution and consensus clients, with the execution client natively executing blocks and packaging the accessed state and bytecode into a self-contained execution witness used to generate the proof. Concurrently, the consensus client acts as a cryptographic coordinator, monitoring the beacon chain to trigger proof generation, signing the resulting proof, and broadcasting it across the network.
+A prover generates execution proofs and shares them with peers.
+Whereas, a verifier (zkAttester) verifies these proofs and attests to
+slots based on the validity of the associated proof. Both provers and
+verifiers must be active validators to perform their duties. To enable
+network statelessness for verifiers, a prover must maintain a fully
+synchronized node comprising both the execution and consensus clients,
+with the execution client natively executing blocks and packaging the
+accessed state and bytecode into a self-contained execution witness
+used to generate the proof. Concurrently, the consensus client acts as
+a cryptographic coordinator, monitoring the beacon chain to trigger
+proof generation, signing the resulting proof, and broadcasting it
+across the network.
 
-At the protocol level, this EIP introduces the `ProofEngine` as a new abstraction operating alongside the traditional `ExecutionEngine`. For the prover, this `ProofEngine` becomes the critical interface that initiates asynchronous proof generation, manages local proof storage, and handles mathematical verification, perfectly synchronizing the execution client's heavy data output with the consensus layer's network operations.
+At the protocol level, this EIP introduces the `ProofEngine` as a new
+abstraction operating alongside the traditional `ExecutionEngine`. For
+the prover, this `ProofEngine` becomes the critical interface that
+initiates asynchronous proof generation, manages local proof storage,
+and handles mathematical verification, perfectly synchronizing the
+execution client's heavy data output with the consensus layer's
+network operations.
 
-The zkVMs infrastructure is not yet mature enough to be standardized and support real-time proving. Therefore, EIP-8025 is fully optional and straightforward to implement, requiring no hard fork since it does not alter Ethereum's core consensus.
+The zkVMs infrastructure is not yet mature enough to be standardized
+and support real-time proving. Therefore, EIP-8025 is fully optional
+and straightforward to implement, requiring no hard fork since it does
+not alter Ethereum's core consensus.
 
-The immediate scope of this project is for Grandine consensus client to successfully receive, validate and retain execution proofs. As such, any execution client or Engine API integrations are currently excluded from the core requirements and will only be pursued as stretch goals. 
+The immediate scope of this project is for Grandine consensus client
+to successfully receive, validate and retain execution proofs. As
+such, any execution client or Engine API integrations are currently
+excluded from the core requirements and will only be pursued as
+stretch goals.
 
-This proposal targets the current draft of EIP-8025 and may require adjustment as the protocol specification evolves.
+This proposal targets the current draft of EIP-8025 and may require
+adjustment as the protocol specification evolves.
 
 ## Specification
 
 ### Scope and architecture
 
-The core implementation will enable Grandine to receive, validate, and retain EIP-8025 execution proofs generated by external proof systems. The implementation includes SSZ representation and hashing, payload context resolution and binding validation, signature verification, cryptographic proof verification, gossip reception, retrieval of missing proofs through peer-to-peer RPC, and proof state management.
+The core implementation will enable Grandine to receive, validate, and
+retain EIP-8025 execution proofs generated by external proof systems.
+The implementation includes SSZ representation and hashing, payload
+context resolution and binding validation, signature verification,
+cryptographic proof verification, gossip reception, retrieval of
+missing proofs through peer-to-peer RPC, and proof state management.
 
-Within this scope, execution proof handling remains auxiliary to Grandine's existing payload validation and fork-choice behavior. Proof verification failures do not invalidate an execution payload that has already been accepted through the existing Engine API flow.
+Within this scope, execution proof handling remains auxiliary to
+Grandine's existing payload validation and fork-choice behavior. Proof
+verification failures do not invalidate an execution payload that has
+already been accepted through the existing Engine API flow.
 
 ```mermaid
 flowchart TD
@@ -54,7 +120,8 @@ flowchart TD
     Engine <--> Verifier
 ```
 
-The following table summarizes the responsibilities of the principal Grandine components shown in the architecture.
+The following table summarizes the responsibilities of the principal
+Grandine components shown in the architecture.
 
 | Component | Responsibility |
 |-|-|
@@ -65,7 +132,11 @@ The following table summarizes the responsibilities of the principal Grandine co
 
 ### Data model and hashing
 
-EIP-8025 introduces a proof type identifier and three consensus-layer SSZ containers for representing, binding, and signing execution proofs. Together, these types form the core execution-proof data model used by proof generation, validation, gossip, and retained proof state. The P2P protocols introduce additional types.
+EIP-8025 introduces a proof type identifier and three consensus-layer
+SSZ containers for representing, binding, and signing execution
+proofs. Together, these types form the core execution-proof data model
+used by proof generation, validation, gossip, and retained proof
+state. The P2P protocols introduce additional types.
 
 | Type | Purpose |
 |-|-|
@@ -74,11 +145,18 @@ EIP-8025 introduces a proof type identifier and three consensus-layer SSZ contai
 | `ExecutionProof` | Contains the proof bytes, proof type, and public input |
 | `SignedExecutionProof` | Wraps an `ExecutionProof` with the validator index and BLS signature required for publication and validation |
 
-The payload binding is the SSZ hash tree root of the corresponding new payload request. The unsigned `ExecutionProof` is signed by a prover, who must be an active validator, producing the `SignedExecutionProof` exchanged through gossip and RPC.
+The payload binding is the SSZ hash tree root of the corresponding new
+payload request. The unsigned `ExecutionProof` is signed by a prover,
+who must be an active validator, producing the `SignedExecutionProof`
+exchanged through gossip and RPC.
 
 ### Proof reception, validation, and retention
 
-The following sequence diagram illustrates the gossip-validation path. The proof producer's internal generation and signing steps are omitted because they are outside the core project scope. Grandine delegates cryptographic proof verification to an external verifier through `ProofEngine`.
+The following sequence diagram illustrates the gossip-validation path.
+The proof producer's internal generation and signing steps are omitted
+because they are outside the core project scope. Grandine delegates
+cryptographic proof verification to an external verifier through
+`ProofEngine`.
 
 ```mermaid
 sequenceDiagram
@@ -128,18 +206,25 @@ sequenceDiagram
     end
 ```
 
-When a block arrives, the consensus client acts as a dual-orchestrator: it notifies the `ExecutionEngine` to handle payload verification and witness preparation, while simultaneously notifying the `ProofEngine`.
+When a block arrives, the consensus client acts as a
+dual-orchestrator: it notifies the `ExecutionEngine` to handle payload
+verification and witness preparation, while simultaneously notifying
+the `ProofEngine`.
 
 ### Required changes by functional area
 
-The identified EIP-8025 implementation gaps cut across four functional areas: 
+The identified EIP-8025 implementation gaps cut across four functional
+areas:
 
 #### Representation and hashing
 | Gap | Likely implementation area |
 |-|-|
 | EIP-8025 SSZ proof containers | `types` |
 
-This area defines the EIP-8025 SSZ containers `PublicInput`, `ExecutionProof`, and `SignedExecutionProof`. It also supports their SSZ serialization and deserialization and the computation of their hash-tree roots. 
+This area defines the EIP-8025 SSZ containers `PublicInput`,
+`ExecutionProof`, and `SignedExecutionProof`. It also supports their
+SSZ serialization and deserialization and the computation of their
+hash-tree roots.
 
 #### Payload context and proof engine
 | Gap | Likely implementation area |
@@ -148,16 +233,27 @@ This area defines the EIP-8025 SSZ containers `PublicInput`, `ExecutionProof`, a
 | tracking accepted payloads and resolving proof bindings | `fork_choice_control`<br> new execution proof service |
 | proof-state retention and pruning | `ProofEngine` (proposed) |
 
-This area adds the `ProofEngine` verification and notification interfaces, integrates proof verification with the external verifier, connects the notification interfaces to `fork_choice_control`, and implements proof-state retention and pruning within `ProofEngine`. Proof-generation requests through `ProofEngine`, including the `ProofAttributes` request type, are a stretch goal.
+This area adds the `ProofEngine` verification and notification
+interfaces, integrates proof verification with the external verifier,
+connects the notification interfaces to `fork_choice_control`, and
+implements proof-state retention and pruning within `ProofEngine`.
+Proof-generation requests through `ProofEngine`, including the
+`ProofAttributes` request type, are a stretch goal.
 
-For the prototype, `ProofEngine` will maintain bounded proof state that can be reconstructed through proof synchronization after restart. Durable persistence of `ProofEngine` state across restarts is also a stretch goal.
+For the prototype, `ProofEngine` will maintain bounded proof state
+that can be reconstructed through proof synchronization after restart.
+Durable persistence of `ProofEngine` state across restarts is also a
+stretch goal.
 
 #### Consensus-layer validation
 | Gap | Likely implementation area |
 |-|-|
 | consensus-layer proof validation | new execution proof service |
 
-Consensus-layer validation includes message bounds and duplicate checks, resolution of the corresponding accepted payload context, validator eligibility, and signature verification before the proof is submitted to `ProofEngine` for cryptographic verification. 
+Consensus-layer validation includes message bounds and duplicate
+checks, resolution of the corresponding accepted payload context,
+validator eligibility, and signature verification before the proof is
+submitted to `ProofEngine` for cryptographic verification.
 
 #### Gossip, RPC, discovery and sync
 | Gap | Likely implementation area |
@@ -171,20 +267,53 @@ Consensus-layer validation includes message bounds and duplicate checks, resolut
 | retries and catch-up policy | <span style="white-space: nowrap;"><code>p2p::{sync_manager, range_and_root_requests}</code></span> |
 | routing proof traffic between `eth2_libp2p` and the execution proof service | <span style="white-space: nowrap;"><code>p2p::{network, messages}</code></span><br> new execution proof service |
 
-Grandine will receive proofs through gossip and request missing proofs through the proof-by-range and proof-by-root P2P RPC protocols. Proofs received through either path will be routed to the execution proof service for consensus-layer validation and submission to `ProofEngine`. Serving proofs retained by `ProofEngine`, proof status RPC support, rate limiting, and `eproof` ENR advertisement and discovery are also stretch goals.
+Grandine will receive proofs through gossip and request missing proofs
+through the proof-by-range and proof-by-root P2P RPC protocols. Proofs
+received through either path will be routed to the execution proof
+service for consensus-layer validation and submission to
+`ProofEngine`. Serving proofs retained by `ProofEngine`, proof status
+RPC support, rate limiting, and `eproof` ENR advertisement and
+discovery are also stretch goals.
 
 ### Testing and interoperability
 
-Generating real-time execution proofs requires 8x5090s (minimum), making it impractical to use consumer hardware for daily testing. Instead, this project will rely on a simulated testing environment. We will use the following standard Ethereum developer tools to validate the Grandine consensus client's networking, memory management, and fork-choice logic:
+Generating real-time execution proofs requires 8x5090s (minimum),
+making it impractical to use consumer hardware for daily testing.
+Instead, this project will rely on a simulated testing environment. We
+will use the following standard Ethereum developer tools to validate
+the Grandine consensus client's networking, memory management, and
+fork-choice logic:
 
-- **Network Simulation and Mock Proving via zkboost**: To validate the `execution_proof` gossip subnets and the internal `ProofEngine` routing, the testing environment will utilize the zkboost middleware configured with an in-process mock backend. This configuration bypasses actual cryptographic generation, returning simulated proof byte-arrays instead. By programmatically manipulating parameters such as mock_proving_time, mock_proof_size, and mock_failure, we will test Grandine against asynchronous race conditions, maximum network payload limits, and forced mathematical verification failures.
-- **Protocol Compliance and Interoperability via Hive**: To strictly adhere to EIP-8025, we will validate protocol-level state transitions via the Ethereum Hive framework and integrate developing stateless fixtures to test verified edge cases. By orchestrating containerized devnets that combine Hive test-runners with the mocked zkboost infrastructure, we will programmatically verify that Grandine correctly handles SSZ decoding, successfully filters malicious gossip traffic via consensus-layer validation, and accurately updates the optimistic fork-choice based on verification outcomes.
+- **Network Simulation and Mock Proving via zkboost**: To validate the
+  `execution_proof` gossip subnets and the internal `ProofEngine`
+  routing, the testing environment will utilize the zkboost middleware
+  configured with an in-process mock backend. This configuration
+  bypasses actual cryptographic generation, returning simulated proof
+  byte-arrays instead. By programmatically manipulating parameters
+  such as mock_proving_time, mock_proof_size, and mock_failure, we
+  will test Grandine against asynchronous race conditions, maximum
+  network payload limits, and forced mathematical verification
+  failures.
+- **Protocol Compliance and Interoperability via Hive**: To strictly
+  adhere to EIP-8025, we will validate protocol-level state
+  transitions via the Ethereum Hive framework and integrate developing
+  stateless fixtures to test verified edge cases. By orchestrating
+  containerized devnets that combine Hive test-runners with the mocked
+  zkboost infrastructure, we will programmatically verify that
+  Grandine correctly handles SSZ decoding, successfully filters
+  malicious gossip traffic via consensus-layer validation, and
+  accurately updates the optimistic fork-choice based on verification
+  outcomes.
 
-Note: Because EIP-8025 is still an experimental and actively developing standard, the available testing tools and fixtures are expected to evolve and mature over time.
+Because EIP-8025 is still an experimental and actively developing
+standard, the available testing tools and fixtures are expected to
+evolve and mature over time.
 
 ## Roadmap
 
-The roadmap assumes two engineers working together on one phase at a time and targets a Mainnet prototype capable of receiving and verifying block execution proofs from an Ethproofs prover.
+The roadmap assumes two engineers working together on one phase at a
+time and targets a Mainnet prototype capable of receiving and
+verifying block execution proofs from an Ethproofs prover.
 
 | Period | Milestone | Principal work |
 |-|-|-|
@@ -195,27 +324,58 @@ The roadmap assumes two engineers working together on one phase at a time and ta
 | <span style="white-space: nowrap;">Weeks 17–19</span><br><span style="white-space: nowrap;">5–23 Oct</span> | Proof synchronization, catch-up, and recovery | Implement proof peer selection, outbound synchronization, catch-up, timeouts, and reconstruction of `ProofEngine` state after restart and reorganization. |
 | <span style="white-space: nowrap;">Weeks 20–22</span><br><span style="white-space: nowrap;">26 Oct–13 Nov</span> | Mainnet interoperability and demonstration | Validate Mainnet interoperability with an Ethproofs prover, proof synchronization and verification, restart and catch-up behavior, and prepare the final demonstration. |
 
-Stretch goals include proof generation requests through `ProofEngine`, validator signing and publication, serving proofs retained by `ProofEngine` over RPC, proof status RPC support, and `eproof` ENR advertisement and discovery.
+Stretch goals include proof generation requests through `ProofEngine`,
+validator signing and publication, serving proofs retained by
+`ProofEngine` over RPC, proof status RPC support, and `eproof` ENR
+advertisement and discovery.
 
 ## Possible challenges
 
 Following are the hurdles and limitations we might need to overcome:
 
-- At present, this project is actively being prototyped across different clients in the ecosystem. Grandine implementation must be compatible with other consensus clients as well to avoid unnecessary forks. The EIP and consensus specs are WIP, with a few conflicting edge cases.
-- Real-time proving is only feasible once ePBS is introduced via the Glamsterdam hardfork as it extends the available proving window to 6-9 seconds. Without this, the at-present standard i.e. 1-2 second window for proving is almost impossible on mainnet. The decision to prioritize pre-gloas vs post-gloas implementation is still TBD.
-- One of the most difficult challenges is establishing robust DoS protection against invalid proof gossip. Execution proofs can be up to 4 MiB in size, therefore malicious peers could flood the `execution_proof` subnets with massive arrays of junk data.
-- There are many possible approaches to testing across this scope, and the fixtures will mature over time. Building a testing environment to verify simulated proofs of different combinations of guest programs and zkVMs is incredibly challenging to script and maintain.
-- EIP-8025 has a dense architecture, so we are limiting the initial features to ship a minimal, functional implementation. Anything unrelated to the consensus client and its proof verification pipeline is categorized as a stretch goal. However, as our understanding of the implementation improves, we anticipate that project scope may grow.
+- At present, this project is actively being prototyped across
+  different clients in the ecosystem. Grandine implementation must be
+  compatible with other consensus clients as well to avoid unnecessary
+  forks. The EIP and consensus specs are WIP, with a few conflicting
+  edge cases.
+- Real-time proving is only feasible once ePBS is introduced via the
+  Glamsterdam hardfork as it extends the available proving window to
+  6-9 seconds. Without this, the at-present standard i.e. 1-2 second
+  window for proving is almost impossible on mainnet. The decision to
+  prioritize pre-gloas vs post-gloas implementation is still TBD.
+- One of the most difficult challenges is establishing robust DoS
+  protection against invalid proof gossip. Execution proofs can be up
+  to 4 MiB in size, therefore malicious peers could flood the
+  `execution_proof` subnets with massive arrays of junk data.
+- There are many possible approaches to testing across this scope, and
+  the fixtures will mature over time. Building a testing environment
+  to verify simulated proofs of different combinations of guest
+  programs and zkVMs is incredibly challenging to script and maintain.
+- EIP-8025 has a dense architecture, so we are limiting the initial
+  features to ship a minimal, functional implementation. Anything
+  unrelated to the consensus client and its proof verification
+  pipeline is categorized as a stretch goal. However, as our
+  understanding of the implementation improves, we anticipate that
+  project scope may grow.
 
 ## Goal of the project
 
-The primary objective of this project is to deliver a minimal Grandine verifier, supporting the following capabilities:
+The primary objective of this project is to deliver a minimal Grandine
+verifier, supporting the following capabilities:
 
-- Subscribe to and ingest `execution_proof` messages across designated `ProofType` libp2p subnets without dropping legitimate traffic.
-- Execute pre-verification checks (verifying validator BLS signatures and deduplicating proofs) to filter out invalid payloads and protect the node from gossip-layer DoS attacks.
-- Route well-formed proofs to `ProofEngine` and successfully capture the verification status (e.g., `VALID` or `INVALIDATED`).
-- Achieve the 3-of-5 ($k$-of-$n$) consensus policy, by successfully aggregating and verifying at least 3 distinct ProofType proofs for a single block payload.
-- Trigger the fork-choice algorithm to permanently accept an optimistically imported block upon successful proof verification, or successfully prune it if the proofs are invalid.
+- Subscribe to and ingest `execution_proof` messages across designated
+  `ProofType` libp2p subnets without dropping legitimate traffic.
+- Execute pre-verification checks (verifying validator BLS signatures
+  and deduplicating proofs) to filter out invalid payloads and protect
+  the node from gossip-layer DoS attacks.
+- Route well-formed proofs to `ProofEngine` and successfully capture
+  the verification status (e.g., `VALID` or `INVALIDATED`).
+- Achieve the 3-of-5 ($k$-of-$n$) consensus policy, by successfully
+  aggregating and verifying at least 3 distinct ProofType proofs for a
+  single block payload.
+- Trigger the fork-choice algorithm to permanently accept an
+  optimistically imported block upon successful proof verification, or
+  successfully prune it if the proofs are invalid.
 
 ## Collaborators
 
