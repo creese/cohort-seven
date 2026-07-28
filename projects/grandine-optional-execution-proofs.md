@@ -153,7 +153,7 @@ exchanged through gossip and RPC.
 ### Proof reception, validation, and retention
 
 The following sequence diagram illustrates the gossip-validation path.
-The proof producer's internal generation and signing steps are omitted
+The prover's internal generation and signing steps are omitted
 because they are outside the core project scope. Grandine delegates
 cryptographic proof verification to an external verifier through
 `ProofEngine`.
@@ -162,7 +162,7 @@ cryptographic proof verification to an external verifier through
 sequenceDiagram
     autonumber
 
-    participant Producer as External proof producer
+    participant Prover as External prover
     participant Network as External gossip network
     participant Libp2p as eth2_libp2p
     participant P2P as p2p
@@ -175,7 +175,7 @@ sequenceDiagram
     FCC->>PE: Notify new payload
     FCC->>PE: Notify fork-choice update
 
-    Producer->>Network: Publish signed execution proof
+    Prover->>Network: Publish signed execution proof
     Network->>Libp2p: Signed execution proof
     Libp2p->>P2P: Signed execution proof
     P2P->>EPS: Submit signed execution proof
