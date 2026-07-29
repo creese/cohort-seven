@@ -374,8 +374,9 @@ verifier, supporting the following capabilities:
   aggregating and verifying at least 3 distinct ProofType proofs for a
   single block payload.
 - Trigger the fork-choice algorithm to permanently accept an
-  optimistically imported block upon successful proof verification, or
-  successfully prune it if the proofs are invalid.
+  optimistically imported block upon successful proof verification.
+  Reject invalid proofs to prevent DoS attacks, and defer to the
+  standard Engine API validation.
 
 ## Collaborators
 
