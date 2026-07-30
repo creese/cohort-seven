@@ -373,10 +373,9 @@ verifier, supporting the following capabilities:
 - Achieve the 3-of-5 ($k$-of-$n$) consensus policy, by successfully
   aggregating and verifying at least 3 distinct ProofType proofs for a
   single block payload.
-- Trigger the fork-choice algorithm to permanently accept an
-  optimistically imported block upon successful proof verification.
-  Reject invalid proofs to prevent DoS attacks, and defer to the
-  standard Engine API validation.
+- Reject invalid proofs to prevent DoS attacks, and defer the
+  task of payload validity and fork choice to the standard Engine
+  API validation.
 
 ## Collaborators
 
