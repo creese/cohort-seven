@@ -312,7 +312,7 @@ evolve and mature over time.
 ## Roadmap
 
 The roadmap assumes two engineers working together on one milestone at
-a time across two work streams and targets a Mainnet prototype capable
+a time across two workstreams and targets a Mainnet prototype capable
 of receiving and verifying block execution proofs from an Ethproofs
 prover.
 
@@ -321,8 +321,8 @@ prover.
     <tr>
       <th>Period</th>
       <th>Milestone</th>
-      <th>Charles's Work Stream</th>
-      <th>Keshav's Work Stream</th>
+      <th>Charles's Workstream</th>
+      <th>Keshav's Workstream</th>
     </tr>
   </thead>
   <tbody>
