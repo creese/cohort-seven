@@ -327,9 +327,9 @@ prover.
   </thead>
   <tbody>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Week 8</span><br>
-        <span style="white-space: nowrap;">3–7 Aug</span>
+      <td nowrap>
+        Week 8<br>
+        3–7 Aug
       </td>
       <td>
 	    EIP-8025 protocol baseline, proof data model, hashing, and
@@ -347,9 +347,9 @@ prover.
 	  </td>
     </tr>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Weeks 9–11</span><br>
-        <span style="white-space: nowrap;">10–28 Aug</span>
+      <td nowrap>
+        Weeks 9–11<br>
+        10–28 Aug
       </td>
       <td>
 	    Execution proof verification, payload binding, and proof-state management
@@ -366,9 +366,9 @@ prover.
 	  </td>
     </tr>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Weeks 12–14</span><br>
-        <span style="white-space: nowrap;">31 Aug–18 Sep</span>
+      <td nowrap>
+        Weeks 12–14<br>
+        31 Aug–18 Sep
       </td>
       <td>
 	    EIP-8025 proof gossip and outbound proof RPC
@@ -383,9 +383,9 @@ prover.
 	  </td>
     </tr>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Weeks 15–16</span><br>
-        <span style="white-space: nowrap;">21 Sep–2 Oct</span>
+      <td nowrap>
+        Weeks 15–16<br>
+        21 Sep–2 Oct
       </td>
       <td>
 	    Proof traffic routing
@@ -402,9 +402,9 @@ prover.
 	  </td>
     </tr>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Weeks 17–19</span><br>
-        <span style="white-space: nowrap;">5–23 Oct</span>
+      <td nowrap>
+        Weeks 17–19<br>
+        5–23 Oct
       </td>
       <td>
 	    Proof synchronization, catch-up, and recovery
@@ -419,9 +419,9 @@ prover.
 	  </td>
     </tr>
     <tr>
-      <td>
-        <span style="white-space: nowrap;">Weeks 20–22</span><br>
-        <span style="white-space: nowrap;">26 Oct–13 Nov</span>
+      <td nowrap>
+        Weeks 20–22<br>
+        26 Oct–13 Nov
       </td>
       <td>
 	    Mainnet interoperability and demonstration
