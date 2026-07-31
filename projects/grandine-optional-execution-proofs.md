@@ -312,17 +312,128 @@ evolve and mature over time.
 ## Roadmap
 
 The roadmap assumes two engineers working together on one phase at a
-time and targets a Mainnet prototype capable of receiving and
-verifying block execution proofs from an Ethproofs prover.
+time in two streams and targets a Mainnet prototype capable of
+receiving and verifying block execution proofs from an Ethproofs
+prover.
 
-| Period | Milestone | Principal work |
-|-|-|-|
-| <span style="white-space: nowrap;">Week 7</span><br><span style="white-space: nowrap;">27–31 Jul</span> | EIP-8025 protocol baseline, representation, and hashing | Finalize the EIP-8025 protocol semantics and implement the core proof types, hashing and signing support, and initial interfaces. |
-| <span style="white-space: nowrap;">Weeks 8–10</span><br><span style="white-space: nowrap;">3–21 Aug</span> | `ProofEngine`, payload context, validation, and proof state | Implement the `ProofEngine` verification and notification operations, external verifier integration, proof state retention and pruning, the execution proof service, accepted payload tracking and proof binding, and consensus-layer proof validation; create test proofs and mock external-verifier responses. |
-| <span style="white-space: nowrap;">Weeks 11–13</span><br><span style="white-space: nowrap;">24 Aug–11 Sep</span> | EIP-8025 gossip and outbound proof RPC in `eth2_libp2p` | Implement EIP-8025 proof gossip and outbound proof RPC in `eth2_libp2p`, including protocol codecs, limits, network events, and protocol tests. |
-| <span style="white-space: nowrap;">Weeks 14–16</span><br><span style="white-space: nowrap;">14 Sep–2 Oct</span> | Proof traffic routing | Connect `eth2_libp2p` to the execution proof service for proof traffic routing and gossip validation; add configuration, logging, metrics, and end-to-end integration tests. |
-| <span style="white-space: nowrap;">Weeks 17–19</span><br><span style="white-space: nowrap;">5–23 Oct</span> | Proof synchronization, catch-up, and recovery | Implement proof peer selection, outbound synchronization, catch-up, timeouts, and reconstruction of `ProofEngine` state after restart and reorganization. |
-| <span style="white-space: nowrap;">Weeks 20–22</span><br><span style="white-space: nowrap;">26 Oct–13 Nov</span> | Mainnet interoperability and demonstration | Validate Mainnet interoperability with an Ethproofs prover, proof synchronization and verification, restart and catch-up behavior, and prepare the final demonstration. |
+<table>
+  <thead>
+    <tr>
+      <th>Period</th>
+      <th>Milestone</th>
+      <th>Charles's Work Stream</th>
+      <th>Keshav's Work Stream</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Week 8</span><br>
+        <span style="white-space: nowrap;">3–7 Aug</span>
+      </td>
+      <td>
+	    EIP-8025 protocol baseline, proof data model, hashing, and
+        signing
+	  </td>
+      <td>
+	    ProofType, PublicInput, ExecutionProof, and
+        SignedExecutionProof; SSZ serialization; hash-tree-root
+        computation for payload binding
+	  </td>
+      <td>
+	    BLS signing-root computation and signature verification,
+        including domain separation; initial ProofEngine and execution
+        proof service interfaces
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Weeks 9–11</span><br>
+        <span style="white-space: nowrap;">10–28 Aug</span>
+      </td>
+      <td>
+	    Execution proof verification, payload binding, and proof-state management
+	  </td>
+      <td>
+	    ProofEngine implementation, external-verifier integration,
+        proof retention and pruning, and new-payload and fork-choice
+        notifications
+      </td>
+      <td>
+	    Execution proof service; accepted-payload tracking and
+        proof-to-payload binding; duplicate, validator-eligibility,
+        and BLS signature checks
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Weeks 12–14</span><br>
+        <span style="white-space: nowrap;">31 Aug–18 Sep</span>
+      </td>
+      <td>
+	    EIP-8025 proof gossip and outbound proof RPC
+	  </td>
+      <td>
+	    Proof gossip topics, pubsub message handling, and SSZ/Snappy
+        codecs
+      </td>
+      <td>
+	    Proof-by-range and proof-by-root RPC; request and response
+        codecs; outbound handlers
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Weeks 15–16</span><br>
+        <span style="white-space: nowrap;">21 Sep–2 Oct</span>
+      </td>
+      <td>
+	    Proof traffic routing
+	  </td>
+      <td>
+	    Route gossiped proofs through p2p to the execution proof
+        service and return ACCEPT, REJECT, or IGNORE validation
+        outcomes
+	  </td>
+      <td>
+	    Route proof-by-range and proof-by-root responses to the
+        execution proof service; proof-feature configuration,
+        observability, and integration tests
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Weeks 17–19</span><br>
+        <span style="white-space: nowrap;">5–23 Oct</span>
+      </td>
+      <td>
+	    Proof synchronization, catch-up, and recovery
+	  </td>
+      <td>
+	    Missing-proof detection, peer selection, proof retrieval by
+        range or root, and request tracking
+	  </td>
+      <td>
+	    Timeouts and retries; restart reconstruction; reorg handling,
+        request cancellation, and pruning
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="white-space: nowrap;">Weeks 20–22</span><br>
+        <span style="white-space: nowrap;">26 Oct–13 Nov</span>
+      </td>
+      <td>
+	    Mainnet interoperability and demonstration
+	  </td>
+      <td colspan="2">
+	    Ethproofs interoperability and proof verification;
+        synchronization, catch-up, and restart recovery; final
+        demonstration
+	  </td>
+    </tr>
+  </tbody>
+</table>
 
 Stretch goals include proof generation requests through `ProofEngine`,
 validator signing and publication, serving proofs retained by
