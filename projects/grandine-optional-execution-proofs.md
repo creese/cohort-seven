@@ -311,9 +311,9 @@ evolve and mature over time.
 
 ## Roadmap
 
-The roadmap assumes two engineers working together on one phase at a
-time in two streams and targets a Mainnet prototype capable of
-receiving and verifying block execution proofs from an Ethproofs
+The roadmap assumes two engineers working together on one milestone at
+a time across two work streams and targets a Mainnet prototype capable
+of receiving and verifying block execution proofs from an Ethproofs
 prover.
 
 <table>
@@ -437,8 +437,8 @@ prover.
 
 Stretch goals include proof generation requests through `ProofEngine`,
 validator signing and publication, serving proofs retained by
-`ProofEngine` over RPC, proof status RPC support, and `eproof` ENR
-advertisement and discovery.
+`ProofEngine` over RPC, proof status RPC support, `eproof` ENR
+advertisement and discovery, and durable persistence of proof state.
 
 ## Possible challenges
 
